@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Bienvenido a Transporto - Panel de Administración</h1>
+<p>Selecciona una opción para gestionar:</p>
+
+<div style="display: flex; flex-direction: column; gap: 10px; max-width: 300px; margin-top: 20px;">
+    <a href="/users"><button style="width: 100%; padding: 10px;">👤 Gestionar Usuarios</button></a>
+    <a href="/cooperatives"><button style="width: 100%; padding: 10px;">🚌 Gestionar Cooperativas</button></a>
+    <a href="/routes"><button style="width: 100%; padding: 10px;">🛣 Gestionar Rutas</button></a>
+    <a href="/recharges"><button style="width: 100%; padding: 10px;">💳 Recargar Saldo</button></a>
+    <a href="/conductores"><button style="width: 100%; padding: 10px;">🚍 Gestionar Conductores</button></a>
+</div>
+{% endblock %}
