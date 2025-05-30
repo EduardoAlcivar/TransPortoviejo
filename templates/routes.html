@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Rutas</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded shadow">
+        <h1 class="text-2xl font-bold mb-4">Rutas</h1>
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div class="bg-green-200 text-green-800 p-2 rounded mb-4">{{ message }}</div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+
+        <form method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <select name="cooperativa_id" required class="border p-2 rounded">
+                <option value="">Seleccione cooperativa</option>
+                {% for c in cooperativas %}
+                    <option value="{{ c[0] }}">{{ c[1] }}</option>
+                {% endfor %}
+            </select>
+            <input type="text" name="descripcion" placeholder="Descripción" required class="border p-2 rounded">
+            <input type="text" name="tarifa" placeholder="Tarifa" required class="border p-2 rounded">
+            <input type="text" name="horario" placeholder="Horario" required class="border p-2 rounded">
+            <button type="submit" class="col-span-1 md:col-span-2 bg-blue-500 text-white p-2 rounded">Agregar Ruta</button>
+        </form>
+
+    
+        <table class="w-full table-auto border-collapse border">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="border px-4 py-2">Cooperativa</th>
+                    <th class="border px-4 py-2">Descripción</th>
+                    <th class="border px-4 py-2">Tarifa</th>
+                    <th class="border px-4 py-2">Horario</th>
+                    <th class="border px-4 py-2">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ruta in rutas %}
+                <tr class="text-center">
+                    <td class="border px-4 py-2">{{ ruta[1] }}</td>
+                    <td class="border px-4 py-2">{{ ruta[2] }}</td>
+                    <td class="border px-4 py-2">{{ ruta[3] }}</td>
+                    <td class="border px-4 py-2">{{ ruta[4] }}</td>
+                    <td class="border px-4 py-2">
+                        <a href="{{ url_for('edit_route', id=ruta[0]) }}" class="bg-yellow-400 text-white px-2 py-1 rounded">Editar</a>
+                        <form action="{{ url_for('delete_route', id=ruta[0]) }}" method="POST" style="display:inline;">
+                            <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded" onclick="return confirm('¿Estás seguro?')">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+{% endblock %}

@@ -1,0 +1,29 @@
+<!-- templates/editar_ruta.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Editar Ruta</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-xl mx-auto bg-white p-6 rounded shadow">
+        <h1 class="text-2xl font-bold mb-4">Editar Ruta</h1>
+
+        <form method="POST" class="space-y-4">
+            <select name="cooperativa_id" required class="w-full border p-2 rounded">
+                {% for c in cooperativas %}
+                    <option value="{{ c[0] }}" {% if c[0] == ruta[1] %}selected{% endif %}>{{ c[1] }}</option>
+                {% endfor %}
+            </select>
+
+            <input type="text" name="descripcion" value="{{ ruta[2] }}" placeholder="Descripcion" required class="w-full border p-2 rounded">
+            <input type="text" name="tarifa" value="{{ ruta[3] }}" placeholder="Tarifa" required class="w-full border p-2 rounded">
+            <input type="text" name="horario" value="{{ ruta[4] }}" placeholder="Horario" required class="w-full border p-2 rounded">
+
+            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded">Guardar Cambios</button>
+            <a href="{{ url_for('routes') }}" class="ml-2 text-blue-600">Cancelar</a>
+        </form>
+    </div>
+</body>
+</html>
