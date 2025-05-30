@@ -7,9 +7,14 @@ cd \
 d C:\xampp\mysql\bin
 mysql -u root -p
 
+-- 1. Eliminar la base de datos si existe
+DROP DATABASE IF EXISTS transporto;
+
+-- 2. Crear nuevamente la base de datos
 CREATE DATABASE transporto;
 USE transporto;
 
+-- 3. Crear tabla de usuarios
 CREATE TABLE users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100),
@@ -18,6 +23,7 @@ CREATE TABLE users (
     fecha_nacimiento DATE
 );
 
+-- 4. Crear tabla de cooperativas
 CREATE TABLE cooperatives (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100),
@@ -25,6 +31,7 @@ CREATE TABLE cooperatives (
     ciudad VARCHAR(100)
 );
 
+-- 5. Crear tabla de rutas
 CREATE TABLE routes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     cooperativa_id INT,
@@ -34,6 +41,7 @@ CREATE TABLE routes (
     FOREIGN KEY (cooperativa_id) REFERENCES cooperatives(id) ON DELETE CASCADE
 );
 
+-- 6. Crear tabla de recargas
 CREATE TABLE recharges (
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
@@ -43,6 +51,7 @@ CREATE TABLE recharges (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
+-- 7. Crear tabla de conductores
 CREATE TABLE conductores (
     id INT AUTO_INCREMENT PRIMARY KEY,
     ruta_id INT,

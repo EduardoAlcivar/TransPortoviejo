@@ -28,7 +28,7 @@ def users():
         cur.execute("INSERT INTO users (nombre, email, telefono, fecha_nacimiento) VALUES (%s, %s, %s, %s)",
                     (nombre, email, telefono, fecha_nacimiento))
         mysql.connection.commit()
-        flash('User registered successfully')
+        flash('Usuario registrado exitosamente')
         return redirect(url_for('users'))
     cur.execute("SELECT * FROM users")
     users = cur.fetchall()
@@ -46,7 +46,7 @@ def edit_user(id):
         cur.execute("UPDATE users SET nombre = %s, email = %s, telefono = %s, fecha_nacimiento = %s WHERE id = %s",
                     (nombre, email, telefono, fecha_nacimiento, id))
         mysql.connection.commit()
-        flash('User updated successfully')
+        flash('Usuario actualizado con éxito')
         return redirect(url_for('users'))
     cur.execute("SELECT * FROM users WHERE id = %s", (id,))
     user = cur.fetchone()
@@ -59,7 +59,7 @@ def delete_user(id):
     cur.execute("DELETE FROM users WHERE id = %s", (id,))
     mysql.connection.commit()
     cur.close()
-    flash('User deleted successfully')
+    flash('Usuario eliminado exitosamente')
     return redirect(url_for('users'))
 
 # COOPERATIVES
@@ -73,7 +73,7 @@ def cooperatives():
         cur.execute("INSERT INTO cooperatives (nombre, color, ciudad) VALUES (%s, %s, %s)",
                     (nombre, color, ciudad))
         mysql.connection.commit()
-        flash('Cooperative registered successfully')
+        flash('Cooperativa registrada con éxito')
         return redirect(url_for('cooperatives'))
     cur.execute("SELECT * FROM cooperatives")
     cooperatives = cur.fetchall()
@@ -90,7 +90,7 @@ def edit_cooperative(id):
         cur.execute("UPDATE cooperatives SET nombre = %s, color = %s, ciudad = %s WHERE id = %s",
                     (nombre, color, ciudad, id))
         mysql.connection.commit()
-        flash('Cooperative updated successfully')
+        flash('Cooperativa actualizada exitosamente')
         return redirect(url_for('cooperatives'))
     cur.execute("SELECT * FROM cooperatives WHERE id = %s", (id,))
     cooperative = cur.fetchone()
@@ -103,7 +103,7 @@ def delete_cooperative(id):
     cur.execute("DELETE FROM cooperatives WHERE id = %s", (id,))
     mysql.connection.commit()
     cur.close()
-    flash('Cooperative deleted successfully')
+    flash('Cooperativa eliminada exitosamente')
     return redirect(url_for('cooperatives'))
 
 @app.route('/routes', methods=['GET', 'POST'])
@@ -172,7 +172,7 @@ def recharges():
         cur.execute("INSERT INTO recharges (user_id, monto, metodo_pago) VALUES (%s, %s, %s)",
                     (user_id, monto, metodo_pago))
         mysql.connection.commit()
-        flash('Recharge registered successfully.')
+        flash('Recarga registrada exitosamente.')
         return redirect(url_for('recharges'))
     cur.execute("""
         SELECT recharges.id, users.nombre, recharges.monto, recharges.metodo_pago, recharges.fecha
@@ -195,7 +195,7 @@ def edit_recharge(id):
         cur.execute("UPDATE recharges SET user_id = %s, monto = %s, metodo_pago = %s WHERE id = %s",
                     (user_id, monto, metodo_pago, id))
         mysql.connection.commit()
-        flash('Recharge updated successfully.')
+        flash('Recarga actualizada exitosamente.')
         return redirect(url_for('recharges'))
     cur.execute("SELECT * FROM recharges WHERE id = %s", (id,))
     recarga = cur.fetchone()
@@ -210,7 +210,7 @@ def delete_recharge(id):
     cur.execute("DELETE FROM recharges WHERE id = %s", (id,))
     mysql.connection.commit()
     cur.close()
-    flash('Recharge deleted successfully.')
+    flash('Recarga eliminada exitosamente.')
     return redirect(url_for('recharges'))
 
 
