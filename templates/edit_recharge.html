@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Editar Recarga</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+</head>
+<body class="container mt-4">
+
+  <h1>Editar Recarga</h1>
+
+  <form action="{{ url_for('edit_recharge', id=recarga[0]) }}" method="POST" class="mb-4">
+
+    <!-- Campo Usuario -->
+    <div class="mb-3">
+      <label for="user_id" class="form-label">Usuario</label>
+      <select id="user_id" name="user_id" class="form-select" required>
+        {% for user in users %}
+          <option value="{{ user[0] }}" {% if recarga[1] == user[0] %}selected{% endif %}>{{ user[1] }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Campo Monto -->
+    <div class="mb-3">
+      <label for="monto" class="form-label">Monto</label>
+      <input 
+        type="number" 
+        step="0.01" 
+        id="monto" 
+        name="monto" 
+        class="form-control" 
+        value="{{ recarga[2] }}" 
+        required 
+      />
+    </div>
+
+    <!-- Campo Método de Pago -->
+    <div class="mb-3">
+      <label for="metodo_pago" class="form-label">Método de Pago</label>
+      <select id="metodo_pago" name="metodo_pago" class="form-select" required>
+        <option value="cuenta bancaria" {% if recarga[3] == 'cuenta bancaria' %}selected{% endif %}>Cuenta Bancaria</option>
+        <option value="paypal" {% if recarga[3] == 'paypal' %}selected{% endif %}>PayPal</option>
+        <option value="efectivo" {% if recarga[3] == 'efectivo' %}selected{% endif %}>Efectivo</option>
+      </select>
+    </div>
+
+    <button class="btn btn-primary" type="submit">Guardar cambios</button>
+    <a href="{{ url_for('recharges') }}" class="btn btn-secondary ms-2">Cancelar</a>
+  </form>
+
+</body>
+</html>

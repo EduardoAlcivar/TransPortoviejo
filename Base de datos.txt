@@ -1,0 +1,55 @@
+# No olvidar descargar XAMPP control panel v3.3.0
+
+pip install Flask flask-mysqldb
+
+cd \
+
+d C:\xampp\mysql\bin
+mysql -u root -p
+
+CREATE DATABASE transporto;
+USE transporto;
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    telefono VARCHAR(20),
+    fecha_nacimiento DATE
+);
+
+CREATE TABLE cooperatives (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100),
+    color VARCHAR(50),
+    ciudad VARCHAR(100)
+);
+
+CREATE TABLE routes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cooperativa_id INT,
+    descripcion VARCHAR(255),
+    tarifa DECIMAL(6, 2),
+    horario VARCHAR(50),
+    FOREIGN KEY (cooperativa_id) REFERENCES cooperatives(id) ON DELETE CASCADE
+);
+
+CREATE TABLE recharges (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT,
+    monto DECIMAL(10, 2),
+    metodo_pago ENUM('cuenta bancaria', 'paypal', 'efectivo'),
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE conductores (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    ruta_id INT,
+    nombre VARCHAR(100),
+    fecha_nacimiento DATE,
+    telefono VARCHAR(20),
+    estado_civil VARCHAR(20),
+    genero ENUM('masculino', 'femenino', 'otro'),
+    FOREIGN KEY (ruta_id) REFERENCES routes(id) ON DELETE CASCADE
+);
