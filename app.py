@@ -62,7 +62,7 @@ def delete_user(id):
     flash('Usuario eliminado correctamente')
     return redirect(url_for('users'))
 
-# COOPERATIVES
+# COOPERATIVAS
 @app.route('/cooperatives', methods=['GET', 'POST'])
 def cooperatives():
     cur = mysql.connection.cursor()
