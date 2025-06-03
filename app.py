@@ -158,7 +158,7 @@ def delete_route(id):
     cur.execute("DELETE FROM routes WHERE id = %s", (id,))
     mysql.connection.commit()
     cur.close()
-    flash('Ruta eliminada correctamente')
+    flash('Ruta eliminada exitosamente')
     return redirect(url_for('routes'))
 
 # RECHARGES
