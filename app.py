@@ -279,7 +279,7 @@ def delete_conductor(id):
     cur.execute("DELETE FROM conductores WHERE id = %s", (id,))
     mysql.connection.commit()
     cur.close()
-    flash('Conductor eliminado correctamente.')
+    flash('Conductor eliminado exitosamente.')
     return redirect(url_for('conductores'))
 
 
