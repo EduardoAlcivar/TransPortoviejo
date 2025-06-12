@@ -53,6 +53,7 @@ def users():
     cur.close()
     return render_template('users.html', users=users)
 
+
 @app.route('/edit_user/<int:id>', methods=['GET', 'POST'])
 def edit_user(id):
     cur = mysql.connection.cursor()
@@ -74,13 +75,23 @@ def edit_user(id):
     cur.close()
     return render_template('edit_user.html', user=user)
 
+
 @app.route('/delete_user/<int:id>', methods=['POST'])
 def delete_user(id):
     cur = mysql.connection.cursor()
-    cur.execute("DELETE FROM users WHERE id=%s", (id,))
+
+    # Primero eliminar las recargas asociadas al usuario
+    cur.execute("DELETE FROM recharges WHERE user_id = %s", (id,))
+
+    # Luego eliminar el saldo asociado al usuario (si existe)
+    cur.execute("DELETE FROM saldos WHERE user_id = %s", (id,))
+
+    # Finalmente eliminar el usuario
+    cur.execute("DELETE FROM users WHERE id = %s", (id,))
+
     mysql.connection.commit()
     cur.close()
-    flash('Usuario eliminado correctamente')
+    flash('Usuario eliminado correctamente, junto con sus recargas y saldo asociado.')
     return redirect(url_for('users'))
 
 @app.route('/cooperatives', methods=['GET', 'POST'])
@@ -199,7 +210,7 @@ def recharges():
     cur = mysql.connection.cursor()
 
     if request.method == 'POST':
-        user_id = request.form['user_id']
+        user_id = int(request.form['user_id'])
         monto = float(request.form['monto'])
         metodo_pago = request.form['metodo_pago']
 
@@ -214,14 +225,14 @@ def recharges():
         resultado = cur.fetchone()
 
         if resultado:
-            # Si ya existe, actualizar el saldo
+            # Actualizar saldo existente
             cur.execute("""
                 UPDATE saldos
                 SET saldo = saldo + %s
                 WHERE user_id = %s
             """, (monto, user_id))
         else:
-            # Si no existe, insertar nuevo registro de saldo
+            # Insertar nuevo saldo
             cur.execute("""
                 INSERT INTO saldos (user_id, saldo)
                 VALUES (%s, %s)
@@ -232,7 +243,7 @@ def recharges():
         flash('Recarga registrada correctamente')
         return redirect(url_for('recharges'))
 
-    # Obtener todas las recargas
+    # Mostrar todas las recargas con nombres de usuario
     cur.execute("""
         SELECT recharges.id, users.nombre, recharges.monto, recharges.metodo_pago, recharges.fecha
         FROM recharges
@@ -240,18 +251,19 @@ def recharges():
     """)
     recargas = cur.fetchall()
 
-    # Obtener lista de usuarios para el formulario
+    # Lista de usuarios para formulario
     cur.execute("SELECT id, nombre FROM users")
     users = cur.fetchall()
 
     cur.close()
     return render_template('recharges.html', recargas=recargas, users=users)
 
+
 @app.route('/edit_recharge/<int:id>', methods=['GET', 'POST'])
 def edit_recharge(id):
     cur = mysql.connection.cursor()
 
-    # Obtener la recarga original antes de editar
+    # Obtener datos originales
     cur.execute("SELECT user_id, monto FROM recharges WHERE id = %s", (id,))
     original = cur.fetchone()
     if not original:
@@ -265,7 +277,6 @@ def edit_recharge(id):
         monto_nuevo = float(request.form['monto'])
         metodo_pago = request.form['metodo_pago']
 
-        # Calcular diferencia de saldo
         diferencia = monto_nuevo - float(monto_original)
 
         # Actualizar recarga
@@ -276,25 +287,24 @@ def edit_recharge(id):
         """, (user_id_nuevo, monto_nuevo, metodo_pago, id))
 
         if user_id_nuevo == user_id_original:
-            # Si el usuario no cambió, solo actualiza su saldo
+            # Solo actualizar saldo del mismo usuario
             cur.execute("""
                 UPDATE saldos
                 SET saldo = saldo + %s
                 WHERE user_id = %s
             """, (diferencia, user_id_nuevo))
         else:
-            # Si el usuario cambió:
-            # 1. Devolver monto al usuario anterior
+            # Ajustar saldo usuario anterior
             cur.execute("""
                 UPDATE saldos
                 SET saldo = saldo - %s
                 WHERE user_id = %s
             """, (monto_original, user_id_original))
-            # 2. Sumar monto al nuevo usuario
-            cur.execute("""
-                SELECT saldo FROM saldos WHERE user_id = %s
-            """, (user_id_nuevo,))
+
+            # Ajustar saldo usuario nuevo (insertar si no existe)
+            cur.execute("SELECT saldo FROM saldos WHERE user_id = %s", (user_id_nuevo,))
             existe = cur.fetchone()
+
             if existe:
                 cur.execute("""
                     UPDATE saldos
@@ -312,7 +322,7 @@ def edit_recharge(id):
         flash('Recarga modificada correctamente.')
         return redirect(url_for('recharges'))
 
-    # Mostrar datos para el formulario
+    # Obtener datos para formulario
     cur.execute("SELECT * FROM recharges WHERE id = %s", (id,))
     recarga = cur.fetchone()
     cur.execute("SELECT id, nombre FROM users")
@@ -322,16 +332,33 @@ def edit_recharge(id):
     return render_template('edit_recharge.html', recarga=recarga, users=users)
 
 
-
 @app.route('/delete_recharge/<int:id>', methods=['POST'])
 def delete_recharge(id):
     cur = mysql.connection.cursor()
-    cur.execute("DELETE FROM recharges WHERE id=%s", (id,))
+
+    # Obtener recarga antes de borrar para ajustar saldo
+    cur.execute("SELECT user_id, monto FROM recharges WHERE id = %s", (id,))
+    recarga = cur.fetchone()
+    if not recarga:
+        flash('Recarga no encontrada.')
+        return redirect(url_for('recharges'))
+
+    user_id, monto = recarga
+
+    # Eliminar recarga
+    cur.execute("DELETE FROM recharges WHERE id = %s", (id,))
+
+    # Restar monto del saldo del usuario
+    cur.execute("""
+        UPDATE saldos
+        SET saldo = saldo - %s
+        WHERE user_id = %s
+    """, (monto, user_id))
+
     mysql.connection.commit()
     cur.close()
     flash('Recarga eliminada correctamente')
     return redirect(url_for('recharges'))
-
 
 @app.route('/conductores', methods=['GET', 'POST'])
 def conductores():
@@ -486,7 +513,7 @@ def login():
 def logout():
     session.clear()
     flash('Sesión cerrada')
-    return redirect(url_for('login'))
+    return redirect(url_for('principal'))
 
 
 @app.route('/menu')
@@ -638,7 +665,7 @@ def informe():
                 JOIN users u ON r.user_id = u.id
                 WHERE 1=1 {condicion_filtro}
                 ORDER BY r.id ASC
-            """
+            """ 
         elif tipo == "rutas":
             consulta = f"""
                 SELECT id, descripcion, tarifa, horario
