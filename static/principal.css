@@ -1,0 +1,77 @@
+ 
+body.rol-page {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(to right, #c2f0c2, #a8d0f0);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+ 
+.rol-container {
+    background-color: #f2faff;
+    border-radius: 20px;
+    padding: 40px 50px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    width: 500px;
+    text-align: center;
+}
+
+ 
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.logo img {
+      width: 50px;
+    height: auto;
+}
+
+.logo h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #1e70a2;
+}
+
+.logo p {
+    margin: 0;
+    font-size: 14px;
+    color: #555;
+}
+
+ 
+h2 {
+    margin-bottom: 30px;
+    font-size: 22px;
+    color: #333;
+}
+ 
+.rol-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.btn-rol {
+    background-color: #1e70a2;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 18px;
+    transition: background-color 0.3s;
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.btn-rol:hover {
+    background-color: #155a82;
+}

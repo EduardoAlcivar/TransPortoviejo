@@ -2,38 +2,50 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
-  <title>Saldo e Historial</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <title>TRANSPORTO - Saldo e Historial</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='saldo.css') }}">
 </head>
-<body class="container mt-4">
+<body>
+
+<div class="container-box">
+  <div class="logo">
+    <img src="https://cdn-icons-png.flaticon.com/512/61/61205.png" alt="logo">
+    <div>
+      <h1>TRANSPORTO</h1>
+      <p>La forma inteligente de moverse</p>
+    </div>
+  </div>
 
   <h2>Saldo e Historial de Recargas</h2>
 
-  <div class="mb-4">
+  <div class="saldo-actual mb-4">
     <p><strong>Saldo actual:</strong> ${{ saldo }}</p>
   </div>
 
   <h3>Historial de Recargas:</h3>
 
   {% if recargas %}
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Fecha</th>
-        <th>Monto ($)</th>
-        <th>Método de Pago</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for recarga in recargas %}
-      <tr>
-        <td>{{ recarga.fecha }}</td>
-        <td>{{ recarga.monto }}</td>
-        <td>{{ recarga.metodo_pago }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Fecha</th>
+          <th>Monto ($)</th>
+          <th>Método de Pago</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for recarga in recargas %}
+        <tr>
+          <td>{{ recarga.fecha }}</td>
+          <td>{{ recarga.monto }}</td>
+          <td>{{ recarga.metodo_pago }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
   {% else %}
     <div class="alert alert-info" role="alert">
       No hay recargas registradas.
@@ -41,6 +53,7 @@
   {% endif %}
 
   <a href="{{ url_for('menu') }}" class="btn btn-secondary mt-3">Volver al menú</a>
+</div>
 
 </body>
 </html>

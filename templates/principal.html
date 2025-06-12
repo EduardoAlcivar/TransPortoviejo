@@ -1,14 +1,32 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <title>Seleccionar Rol</title>
+    <meta charset="UTF-8">
+    <title>TRANSPORTO - Seleccionar Rol</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='principal.css') }}">
 </head>
-<body>
+<body class="rol-page">
+
+<div class="container rol-container">
+    <div class="logo">
+        <img src="https://cdn-icons-png.flaticon.com/512/61/61205.png" alt="logo">
+        <div>
+            <h1>TRANSPORTO</h1>
+            <p>La forma inteligente de moverse</p>
+        </div>
+    </div>
+
     <h2>¿Cómo quieres iniciar sesión?</h2>
-    <form method="post">
-        <button type="submit" name="opcion" value="cliente">Cliente</button>
-        <button type="submit" name="opcion" value="admin">Administrador</button>
+
+    <form method="post" class="rol-form">
+        <button type="submit" name="opcion" value="cliente" class="btn-rol">
+            👤 Cliente
+        </button>
+        <button type="submit" name="opcion" value="admin" class="btn-rol">
+            🛠️ Administrador
+        </button>
     </form>
+</div>
+
 </body>
 </html>

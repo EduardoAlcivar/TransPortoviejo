@@ -336,8 +336,7 @@ def delete_recharge(id):
 @app.route('/conductores', methods=['GET', 'POST'])
 def conductores():
     cur = mysql.connection.cursor()
-    
-    # Obtener rutas para el select
+      
     cur.execute("SELECT id, descripcion FROM routes")
     rutas = cur.fetchall()
     
@@ -374,7 +373,7 @@ def conductores():
 def editar_conductor(id):
     cur = mysql.connection.cursor()
     
-    # Obtener rutas para select
+   
     cur.execute("SELECT id, descripcion FROM routes")
     rutas = cur.fetchall()
 
@@ -395,8 +394,7 @@ def editar_conductor(id):
         flash('Conductor actualizado correctamente')
         cur.close()
         return redirect(url_for('conductores'))
-
-    # Obtener conductor por id
+ 
     cur.execute("SELECT id, nombre, fecha_nacimiento, telefono, estado_civil, genero, ruta_id FROM drivers WHERE id=%s", (id,))
     driver = cur.fetchone()
     cur.close()
@@ -589,7 +587,7 @@ def informe():
     campo = None
     valor_filtro = None
 
-    # Diccionario con campos posibles para filtrar por tipo de informe
+     
     campos_posibles = {
         "usuarios": ["nombre", "email", "fecha_registro"],
         "recargas": ["monto", "metodo_pago", "fecha"],
@@ -605,12 +603,12 @@ def informe():
 
         cursor = db.cursor()
 
-        # Armamos condición para filtro (si campo y valor están definidos)
+        
         condicion_filtro = ""
         parametros = []
 
         if campo and valor_filtro:
-            # Para evitar inyección SQL, validar campo contra lista permitida
+             
             if tipo in campos_posibles and campo in campos_posibles[tipo]:
                 condicion_filtro = f" AND {campo} LIKE %s"
                 parametros.append(f"%{valor_filtro}%")

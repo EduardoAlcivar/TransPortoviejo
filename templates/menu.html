@@ -2,21 +2,36 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8" />
-    <title>Menú Principal</title>
+    <title>TRANSPORTO - Menú Principal</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='menu.css') }}">
 </head>
 <body>
+
+<div class="container">
+    <div class="logo">
+        <img src="https://cdn-icons-png.flaticon.com/512/61/61205.png" alt="logo">
+        <div>
+            <h1>TRANSPORTO</h1>
+            <p>La forma inteligente de moverse</p>
+        </div>
+    </div>
+
     <h2>Bienvenido, {{ user_name }}</h2>
 
-    <form action="{{ url_for('informacion_personal') }}" method="get" style="display:inline;">
-        <button type="submit">Información Personal</button>
-    </form>
+    <div class="button-group">
+        <form action="{{ url_for('informacion_personal') }}" method="get">
+            <button type="submit">👤 Información Personal</button>
+        </form>
 
-    <form action="{{ url_for('saldo') }}" method="get" style="display:inline;">
-        <button type="submit">Saldo e Historial de Recargas</button>
-    </form>
+        <form action="{{ url_for('saldo') }}" method="get">
+            <button type="submit">💳 Saldo e Historial de Recargas</button>
+        </form>
 
-    <a href="{{ url_for('logout') }}">
-        <button type="button">Cerrar Sesión</button>
-    </a>
+        <form action="{{ url_for('logout') }}" method="get">
+            <button type="submit" class="logout">🚪 Cerrar Sesión</button>
+        </form>
+    </div>
+</div>
+
 </body>
 </html>
