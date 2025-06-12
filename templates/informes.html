@@ -17,11 +17,11 @@
     <div class="col-md-4">
       <label for="tipo_informe" class="form-label">Tipo de Informe</label>
       <select id="tipo_informe" name="tipo_informe" class="form-select" required>
-        <option value="recargas" {% if tipo_informe == 'recargas' %}selected{% endif %}>Recargas</option>
-        <option value="usuarios" {% if tipo_informe == 'usuarios' %}selected{% endif %}>Usuarios</option>
-        <option value="rutas" {% if tipo_informe == 'rutas' %}selected{% endif %}>Rutas</option>
-        <option value="cooperativas" {% if tipo_informe == 'cooperativas' %}selected{% endif %}>Cooperativas</option>
-        <option value="conductores" {% if tipo_informe == 'conductores' %}selected{% endif %}>Conductores</option>
+        <option value="recargas" {% if tipo == 'recargas' %}selected{% endif %}>Recargas</option>
+        <option value="usuarios" {% if tipo == 'usuarios' %}selected{% endif %}>Usuarios</option>
+        <option value="rutas" {% if tipo == 'rutas' %}selected{% endif %}>Rutas</option>
+        <option value="cooperativas" {% if tipo == 'cooperativas' %}selected{% endif %}>Cooperativas</option>
+        <option value="conductores" {% if tipo == 'conductores' %}selected{% endif %}>Conductores</option>
       </select>
     </div>
     <div class="col-md-3">
@@ -39,23 +39,24 @@
 
   {% if datos %}
   <hr>
-  <h4>Resultados del Informe: {{ tipo_informe|capitalize }}</h4>
+  <h4>Resultados del Informe: {{ tipo|capitalize }}</h4>
+  <p><strong>Descripción:</strong> Este informe presenta datos sobre el tipo de información seleccionada: <em>{{ tipo }}</em>, mostrando los registros de manera ordenada ascendente.</p>
 
   <button class="btn btn-danger mb-3" onclick="generarPDF()">Descargar PDF</button>
 
   <table class="table table-bordered table-striped" id="tablaInforme">
     <thead class="table-light">
       <tr>
-        {% if tipo_informe == "usuarios" %}
+        {% if tipo == "usuarios" %}
           <th>ID</th><th>Nombre</th><th>Email</th><th>Teléfono</th><th>Fecha Nacimiento</th>
-        {% elif tipo_informe == "recargas" %}
+        {% elif tipo == "recargas" %}
           <th>ID</th><th>Usuario</th><th>Monto</th><th>Método de Pago</th><th>Fecha</th>
-        {% elif tipo_informe == "rutas" %}
-          <th>ID</th><th>Cooperativa</th><th>Descripción</th><th>Tarifa</th><th>Horario</th>
-        {% elif tipo_informe == "cooperativas" %}
+        {% elif tipo == "rutas" %}
+          <th>ID</th><th>Descripción</th><th>Tarifa</th><th>Horario</th>
+        {% elif tipo == "cooperativas" %}
           <th>ID</th><th>Nombre</th><th>Color</th><th>Ciudad</th>
-        {% elif tipo_informe == "conductores" %}
-          <th>ID</th><th>Nombre</th><th>Fecha Nacimiento</th><th>Teléfono</th><th>Estado Civil</th><th>Género</th><th>Ruta</th>
+        {% elif tipo == "conductores" %}
+          <th>ID</th><th>Nombre</th><th>Fecha Nacimiento</th><th>Teléfono</th><th>Estado Civil</th><th>Género</th>
         {% endif %}
       </tr>
     </thead>
@@ -75,11 +76,10 @@
     function generarPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF();
-
       doc.setFontSize(18);
-      doc.text("Informe de {{ tipo_informe|capitalize }}", 14, 15);
+      doc.text("Informe de {{ tipo|capitalize }}", 14, 15);
       doc.autoTable({ html: '#tablaInforme', startY: 20 });
-      doc.save("informe_{{ tipo_informe }}.pdf");
+      doc.save("informe_{{ tipo }}.pdf");
     }
   </script>
 
