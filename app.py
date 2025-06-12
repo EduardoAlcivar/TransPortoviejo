@@ -1,3 +1,5 @@
+import pdfkit
+from flask import make_response
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_mysqldb import MySQL
@@ -585,93 +587,49 @@ def index():
 @app.route("/informe", methods=["GET", "POST"])
 def informe():
     datos = None
-    tipo = None
-    campo = None
-    valor_filtro = None
-
-    # Diccionario con campos posibles para filtrar por tipo de informe
-    campos_posibles = {
-        "usuarios": ["nombre", "email", "fecha_registro"],
-        "recargas": ["monto", "metodo_pago", "fecha"],
-        "rutas": ["nombre_ruta", "descripcion", "fecha_creacion"],
-        "cooperativas": ["nombre", "direccion", "telefono"],
-        "conductores": ["nombre", "apellido", "licencia", "fecha_ingreso"],
-    }
+    tipo_informe = None
 
     if request.method == "POST":
-        tipo = request.form["tipo_informe"]
-        campo = request.form.get("campo")
-        valor_filtro = request.form.get("valor_filtro")
+        tipo_informe = request.form.get("tipo_informe")
+        print(f"Recibido informe: {tipo_informe}")
 
-        cursor = db.cursor()
+        cursor = mysql.connection.cursor()
 
-        # Armamos condición para filtro (si campo y valor están definidos)
-        condicion_filtro = ""
-        parametros = []
-
-        if campo and valor_filtro:
-            # Para evitar inyección SQL, validar campo contra lista permitida
-            if tipo in campos_posibles and campo in campos_posibles[tipo]:
-                condicion_filtro = f" AND {campo} LIKE %s"
-                parametros.append(f"%{valor_filtro}%")
-            else:
-                condicion_filtro = ""
-                parametros = []
-
-        if tipo == "usuarios":
-            consulta = f"""
-                SELECT id, nombre, email, fecha_registro
-                FROM usuarios
-                WHERE 1=1 {condicion_filtro}
-                ORDER BY fecha_registro DESC
-            """
-            cursor.execute(consulta, parametros)
+        if tipo_informe == "usuarios":
+            cursor.execute("SELECT id, nombre, email, telefono, fecha_nacimiento FROM users")
             datos = cursor.fetchall()
 
-        elif tipo == "recargas":
-            consulta = f"""
+        elif tipo_informe == "recargas":
+            cursor.execute("""
                 SELECT r.id, u.nombre, r.monto, r.metodo_pago, r.fecha
-                FROM recargas r
-                JOIN usuarios u ON r.user_id = u.id
-                WHERE 1=1 {condicion_filtro}
-                ORDER BY r.fecha DESC
-            """
-            cursor.execute(consulta, parametros)
+                FROM recharges r
+                JOIN users u ON r.user_id = u.id
+            """)
             datos = cursor.fetchall()
 
-        elif tipo == "rutas":
-            consulta = f"""
-                SELECT id_ruta, nombre_ruta, descripcion, fecha_creacion
-                FROM rutas
-                WHERE 1=1 {condicion_filtro}
-                ORDER BY fecha_creacion DESC
-            """
-            cursor.execute(consulta, parametros)
+        elif tipo_informe == "rutas":
+            cursor.execute("""
+                SELECT r.id, c.nombre, r.descripcion, r.tarifa, r.horario
+                FROM routes r
+                JOIN cooperatives c ON r.cooperativa_id = c.id
+            """)
             datos = cursor.fetchall()
 
-        elif tipo == "cooperativas":
-            consulta = f"""
-                SELECT id_cooperativa, nombre, direccion, telefono
-                FROM cooperativas
-                WHERE 1=1 {condicion_filtro}
-                ORDER BY nombre DESC
-            """
-            cursor.execute(consulta, parametros)
+        elif tipo_informe == "cooperativas":
+            cursor.execute("SELECT id, nombre, color, ciudad FROM cooperatives")
             datos = cursor.fetchall()
 
-        elif tipo == "conductores":
-            consulta = f"""
-                SELECT id_conductor, nombre, apellido, licencia, fecha_ingreso
-                FROM conductores
-                WHERE 1=1 {condicion_filtro}
-                ORDER BY fecha_ingreso DESC
-            """
-            cursor.execute(consulta, parametros)
+        elif tipo_informe == "conductores":
+            cursor.execute("""
+                SELECT d.id, d.nombre, d.fecha_nacimiento, d.telefono, d.estado_civil, d.genero, r.descripcion
+                FROM drivers d
+                JOIN routes r ON d.ruta_id = r.id
+            """)
             datos = cursor.fetchall()
 
         cursor.close()
 
-    return render_template("informe.html", datos=datos, tipo=tipo, campo=campo, valor_filtro=valor_filtro, campos_posibles=campos_posibles)
+    return render_template("informes.html", datos=datos, tipo_informe=tipo_informe)
 
 
 if __name__ == '__main__':
