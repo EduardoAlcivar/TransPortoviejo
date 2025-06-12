@@ -1,5 +1,3 @@
-{% extends "base.html" %}
-{% block content %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -12,63 +10,63 @@
   <h1>Conductores</h1>
 
   <form action="{{ url_for('conductores') }}" method="POST" class="mb-4">
-    <div class="row g-2 mb-3">
-      <div class="col-md-3">
+    <div class="row g-3 mb-3">
+      <div class="col-md-4">
         <label for="ruta_id" class="form-label">Ruta</label>
-        <select name="ruta_id" id="ruta_id" class="form-select" required>
-          <option value="" disabled selected>Seleccione una ruta</option>
+        <select id="ruta_id" name="ruta_id" class="form-select" required>
+          <option value="" disabled selected>Selecciona una ruta</option>
           {% for ruta in rutas %}
             <option value="{{ ruta[0] }}">{{ ruta[1] }}</option>
           {% endfor %}
         </select>
       </div>
-      <div class="col-md-3">
+
+      <div class="col-md-4">
         <label for="nombre" class="form-label">Nombre</label>
-        <input type="text" id="nombre" name="nombre" placeholder="Nombre" required class="form-control" />
+        <input type="text" id="nombre" name="nombre" class="form-control" required />
       </div>
-      <div class="col-md-3">
+
+      <div class="col-md-4">
         <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
-        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required class="form-control" />
-      </div>
-      <div class="col-md-3">
-        <label for="telefono" class="form-label">Teléfono</label>
-        <input type="text" id="telefono" name="telefono" placeholder="Teléfono" required class="form-control" />
+        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" class="form-control" required />
       </div>
     </div>
-    <div class="row g-2 mb-3">
-      <div class="col-md-3">
-        <label for="estado_civil" class="form-label">Estado Civil</label>
-        <input type="text" id="estado_civil" name="estado_civil" placeholder="Estado Civil" required class="form-control" />
+
+    <div class="row g-3 mb-3">
+      <div class="col-md-4">
+        <label for="telefono" class="form-label">Teléfono</label>
+        <input type="text" id="telefono" name="telefono" class="form-control" required />
       </div>
-      <div class="col-md-3">
+
+      <div class="col-md-4">
+        <label for="estado_civil" class="form-label">Estado Civil</label>
+        <input type="text" id="estado_civil" name="estado_civil" class="form-control" required />
+      </div>
+
+      <div class="col-md-4">
         <label for="genero" class="form-label">Género</label>
-        <select name="genero" id="genero" class="form-select" required>
+        <select id="genero" name="genero" class="form-select" required>
+          <option value="" disabled selected>Selecciona género</option>
           <option value="masculino">Masculino</option>
           <option value="femenino">Femenino</option>
           <option value="otro">Otro</option>
         </select>
       </div>
-      <div class="col-md-auto align-self-end">
-        <button class="btn btn-primary" type="submit">Agregar Conductor</button>
-      </div>
     </div>
+
+    <button type="submit" class="btn btn-primary">Agregar Conductor</button>
   </form>
 
-  {% with messages = get_flashed_messages() %}
-  {% if messages %}
-    <div class="alert alert-success">
-      {{ messages[0] }}
-    </div>
-  {% endif %}
-  {% endwith %}
+  <hr />
 
+  <h2>Lista de Conductores</h2>
   <table class="table table-striped">
     <thead>
       <tr>
         <th>ID</th>
-        <th>Ruta ID</th>
+        <th>Ruta</th>
         <th>Nombre</th>
-        <th>Fecha de Nacimiento</th>
+        <th>Fecha Nacimiento</th>
         <th>Teléfono</th>
         <th>Estado Civil</th>
         <th>Género</th>
@@ -76,21 +74,25 @@
       </tr>
     </thead>
     <tbody>
-      {% for conductor in conductores %}
+      {% for driver in drivers %}
       <tr>
-        <td>{{ conductor[0] }}</td>
-        <td>{{ conductor[1] }}</td>
-        <td>{{ conductor[2] }}</td>
-        <td>{{ conductor[3] }}</td>
-        <td>{{ conductor[4] }}</td>
-        <td>{{ conductor[5] }}</td>
-        <td>{{ conductor[6] }}</td>
+        <td>{{ driver[0] }}</td>
+        <td>{{ driver[6] or 'No asignada' }}</td>
+        <td>{{ driver[1] }}</td>
+        <td>{{ driver[2] }}</td>
+        <td>{{ driver[3] }}</td>
+        <td>{{ driver[4] }}</td>
+        <td>{{ driver[5] }}</td>
         <td>
-          <a href="{{ url_for('edit_conductor', id=conductor[0]) }}" class="btn btn-sm btn-warning">Editar</a>
-          <form action="{{ url_for('delete_conductor', id=conductor[0]) }}" method="POST" style="display:inline;">
-            <button class="btn btn-sm btn-danger" onclick="return confirm('¿Eliminar conductor?')" type="submit">Eliminar</button>
+          <a href="{{ url_for('editar_conductor', id=driver[0]) }}" class="btn btn-sm btn-warning">Editar</a>
+          <form action="{{ url_for('eliminar_conductor', id=driver[0]) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('¿Seguro que quieres eliminar este conductor?');">
+            <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
           </form>
         </td>
+      </tr>
+      {% else %}
+      <tr>
+        <td colspan="8" class="text-center">No hay conductores registrados</td>
       </tr>
       {% endfor %}
     </tbody>
@@ -98,4 +100,3 @@
 
 </body>
 </html>
-{% endblock %}

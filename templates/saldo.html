@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Saldo e Historial</title>
+</head>
+<body>
+    <h2>Saldo e Historial de Recargas</h2>
+    <p><strong>Saldo actual:</strong> ${{ saldo }}</p>
+
+    <h3>Historial de Recargas:</h3>
+    <ul>
+        {% for recarga in recargas %}
+            <li>{{ recarga.fecha }} - ${{ recarga.monto }} - {{ recarga.metodo_pago }}</li>
+        {% else %}
+            <li>No hay recargas registradas.</li>
+        {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('menu') }}">Volver al menú</a>
+</body>
+</html>

@@ -9,45 +9,45 @@
 
   <h1>Editar Conductor</h1>
 
-  <form action="{{ url_for('edit_conductor', id=conductor[0]) }}" method="POST" class="mb-4">
+  <form action="{{ url_for('editar_conductor', id=driver[0]) }}" method="POST" class="mb-4">
     <div class="row g-3 mb-3">
       <div class="col-md-4">
         <label for="ruta_id" class="form-label">Ruta</label>
         <select id="ruta_id" name="ruta_id" class="form-select" required>
           {% for ruta in rutas %}
-            <option value="{{ ruta[0] }}" {% if ruta[0] == conductor[1] %}selected{% endif %}>{{ ruta[1] }}</option>
+            <option value="{{ ruta[0] }}" {% if ruta[0] == driver[6] %}selected{% endif %}>{{ ruta[1] }}</option>
           {% endfor %}
         </select>
       </div>
 
       <div class="col-md-4">
         <label for="nombre" class="form-label">Nombre</label>
-        <input type="text" id="nombre" name="nombre" value="{{ conductor[2] }}" class="form-control" required />
+        <input type="text" id="nombre" name="nombre" value="{{ driver[1] }}" class="form-control" required />
       </div>
 
       <div class="col-md-4">
         <label for="fecha_nacimiento" class="form-label">Fecha de Nacimiento</label>
-        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ conductor[3] }}" class="form-control" required />
+        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" value="{{ driver[2] }}" class="form-control" required />
       </div>
     </div>
 
     <div class="row g-3 mb-3">
       <div class="col-md-4">
         <label for="telefono" class="form-label">Teléfono</label>
-        <input type="text" id="telefono" name="telefono" value="{{ conductor[4] }}" class="form-control" required />
+        <input type="text" id="telefono" name="telefono" value="{{ driver[3] }}" class="form-control" required />
       </div>
 
       <div class="col-md-4">
         <label for="estado_civil" class="form-label">Estado Civil</label>
-        <input type="text" id="estado_civil" name="estado_civil" value="{{ conductor[5] }}" class="form-control" required />
+        <input type="text" id="estado_civil" name="estado_civil" value="{{ driver[4] }}" class="form-control" required />
       </div>
 
       <div class="col-md-4">
         <label for="genero" class="form-label">Género</label>
         <select id="genero" name="genero" class="form-select" required>
-          <option value="masculino" {% if conductor[6] == "masculino" %}selected{% endif %}>Masculino</option>
-          <option value="femenino" {% if conductor[6] == "femenino" %}selected{% endif %}>Femenino</option>
-          <option value="otro" {% if conductor[6] == "otro" %}selected{% endif %}>Otro</option>
+          <option value="masculino" {% if driver[5] == "masculino" %}selected{% endif %}>Masculino</option>
+          <option value="femenino" {% if driver[5] == "femenino" %}selected{% endif %}>Femenino</option>
+          <option value="otro" {% if driver[5] == "otro" %}selected{% endif %}>Otro</option>
         </select>
       </div>
     </div>

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Menú Principal</title>
+</head>
+<body>
+    <h2>Bienvenido, {{ user_name }}</h2>
+
+    <form action="{{ url_for('informacion_personal') }}" method="get" style="display:inline;">
+        <button type="submit">Información Personal</button>
+    </form>
+
+    <form action="{{ url_for('saldo') }}" method="get" style="display:inline;">
+        <button type="submit">Saldo e Historial de Recargas</button>
+    </form>
+
+    <a href="{{ url_for('logout') }}">
+        <button type="button">Cerrar Sesión</button>
+    </a>
+</body>
+</html>
