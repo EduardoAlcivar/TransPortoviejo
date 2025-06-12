@@ -1,79 +1,113 @@
 {% extends "base.html" %}
 {% block content %}
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <title>Generador de Informes</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-</head>
-<body class="container mt-4">
+<div class="container mt-4">
 
-  <h1>Generador de Informes</h1>
+  <h1>Generador de Informes con filtro por campo</h1>
 
   <form action="{{ url_for('informe') }}" method="POST" class="row g-3 mb-4">
-    <div class="col-md-4">
+    <div class="col-md-3">
       <label for="tipo_informe" class="form-label">Tipo de Informe</label>
-      <select id="tipo_informe" name="tipo_informe" class="form-select" required>
-        <option value="recargas">Recargas</option>
-        <!-- Puedes añadir más tipos -->
+      <select id="tipo_informe" name="tipo_informe" class="form-select" required onchange="mostrarCampos()">
+        <option value="" disabled selected>Seleccione tipo</option>
+        <option value="usuarios" {% if tipo == 'usuarios' %}selected{% endif %}>Usuarios</option>
+        <option value="recargas" {% if tipo == 'recargas' %}selected{% endif %}>Recargas</option>
+        <option value="rutas" {% if tipo == 'rutas' %}selected{% endif %}>Rutas</option>
+        <option value="cooperativas" {% if tipo == 'cooperativas' %}selected{% endif %}>Cooperativas</option>
+        <option value="conductores" {% if tipo == 'conductores' %}selected{% endif %}>Conductores</option>
       </select>
     </div>
-    <div class="col-md-3">
-      <label for="fecha_inicio" class="form-label">Desde</label>
-      <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" required>
+
+    <div class="col-md-3" id="campo_filtro_div" style="display:none;">
+      <label for="campo" class="form-label">Campo para filtrar</label>
+      <select id="campo" name="campo" class="form-select">
+        <!-- Opciones dinámicas con JS -->
+      </select>
     </div>
-    <div class="col-md-3">
-      <label for="fecha_fin" class="form-label">Hasta</label>
-      <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" required>
+
+    <div class="col-md-3" id="valor_filtro_div" style="display:none;">
+      <label for="valor_filtro" class="form-label">Valor filtro</label>
+      <input type="text" id="valor_filtro" name="valor_filtro" class="form-control" placeholder="Ingrese valor a filtrar" value="{{ valor_filtro or '' }}">
     </div>
-    <div class="col-md-2 d-grid">
-      <button type="submit" class="btn btn-success mt-4">Generar Informe</button>
+
+    <div class="col-md-3 d-grid align-self-end">
+      <button type="submit" class="btn btn-primary">Generar Informe</button>
     </div>
   </form>
 
   {% if datos %}
   <hr>
-  <h4>Resultados del Informe</h4>
+  <h4>Resultados del Informe: {{ tipo|capitalize }} {% if campo %} filtrado por "{{ campo }}" con valor "{{ valor_filtro }}"{% endif %}</h4>
 
-  <button class="btn btn-danger mb-3" onclick="generarPDF()">Descargar PDF</button>
-
-  <table class="table table-bordered table-striped" id="tablaInforme">
-    <thead class="table-light">
+  <table class="table table-bordered table-striped">
+    <thead>
       <tr>
-        <th>ID</th>
-        <th>Usuario</th>
-        <th>Monto</th>
-        <th>Método de Pago</th>
-        <th>Fecha</th>
+        {% if tipo == "usuarios" %}
+          <th>ID</th><th>Nombre</th><th>Email</th><th>Fecha Registro</th>
+        {% elif tipo == "recargas" %}
+          <th>ID</th><th>Usuario</th><th>Monto</th><th>Método de Pago</th><th>Fecha</th>
+        {% elif tipo == "rutas" %}
+          <th>ID Ruta</th><th>Nombre Ruta</th><th>Descripción</th><th>Fecha Creación</th>
+        {% elif tipo == "cooperativas" %}
+          <th>ID Cooperativa</th><th>Nombre</th><th>Dirección</th><th>Teléfono</th>
+        {% elif tipo == "conductores" %}
+          <th>ID Conductor</th><th>Nombre</th><th>Apellido</th><th>Licencia</th><th>Fecha Ingreso</th>
+        {% endif %}
       </tr>
     </thead>
     <tbody>
       {% for fila in datos %}
-      <tr>
-        <td>{{ fila[0] }}</td>
-        <td>{{ fila[1] }}</td>
-        <td>{{ fila[2] }}</td>
-        <td>{{ fila[3] }}</td>
-        <td>{{ fila[4] }}</td>
-      </tr>
+        <tr>
+          {% for columna in fila %}
+            <td>{{ columna }}</td>
+          {% endfor %}
+        </tr>
       {% endfor %}
     </tbody>
   </table>
   {% endif %}
 
-  <script>
-    function generarPDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-      doc.text("Informe de Recargas", 14, 15);
-      doc.autoTable({ html: '#tablaInforme', startY: 20 });
-      doc.save("informe_recargas.pdf");
-    }
-  </script>
+</div>
 
-</body>
-</html>
+<script>
+  const camposPosibles = {{ campos_posibles | tojson }};
+  const tipoSeleccionado = "{{ tipo or '' }}";
+  const campoSeleccionado = "{{ campo or '' }}";
+
+  function mostrarCampos() {
+    const tipoInforme = document.getElementById('tipo_informe').value;
+    const campoDiv = document.getElementById('campo_filtro_div');
+    const valorDiv = document.getElementById('valor_filtro_div');
+    const campoSelect = document.getElementById('campo');
+
+    if (tipoInforme && camposPosibles[tipoInforme]) {
+      // Mostrar y llenar opciones
+      campoDiv.style.display = 'block';
+      valorDiv.style.display = 'block';
+
+      // Limpiar opciones anteriores
+      campoSelect.innerHTML = '<option value="" disabled selected>Seleccione campo</option>';
+
+      camposPosibles[tipoInforme].forEach(campo => {
+        let option = document.createElement('option');
+        option.value = campo;
+        option.textContent = campo.replace(/_/g, ' ').toUpperCase();
+        if (campo === campoSeleccionado) option.selected = true;
+        campoSelect.appendChild(option);
+      });
+
+    } else {
+      campoDiv.style.display = 'none';
+      valorDiv.style.display = 'none';
+    }
+  }
+
+  // Ejecutar al cargar si ya hay tipo seleccionado
+  window.onload = function() {
+    if(tipoSeleccionado) {
+      document.getElementById('tipo_informe').value = tipoSeleccionado;
+      mostrarCampos();
+    }
+  };
+</script>
+
 {% endblock %}

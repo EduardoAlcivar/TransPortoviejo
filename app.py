@@ -582,5 +582,97 @@ def n_login():
 def index():
     return render_template('index.html')
 
+@app.route("/informe", methods=["GET", "POST"])
+def informe():
+    datos = None
+    tipo = None
+    campo = None
+    valor_filtro = None
+
+    # Diccionario con campos posibles para filtrar por tipo de informe
+    campos_posibles = {
+        "usuarios": ["nombre", "email", "fecha_registro"],
+        "recargas": ["monto", "metodo_pago", "fecha"],
+        "rutas": ["nombre_ruta", "descripcion", "fecha_creacion"],
+        "cooperativas": ["nombre", "direccion", "telefono"],
+        "conductores": ["nombre", "apellido", "licencia", "fecha_ingreso"],
+    }
+
+    if request.method == "POST":
+        tipo = request.form["tipo_informe"]
+        campo = request.form.get("campo")
+        valor_filtro = request.form.get("valor_filtro")
+
+        cursor = db.cursor()
+
+        # Armamos condición para filtro (si campo y valor están definidos)
+        condicion_filtro = ""
+        parametros = []
+
+        if campo and valor_filtro:
+            # Para evitar inyección SQL, validar campo contra lista permitida
+            if tipo in campos_posibles and campo in campos_posibles[tipo]:
+                condicion_filtro = f" AND {campo} LIKE %s"
+                parametros.append(f"%{valor_filtro}%")
+            else:
+                condicion_filtro = ""
+                parametros = []
+
+        if tipo == "usuarios":
+            consulta = f"""
+                SELECT id, nombre, email, fecha_registro
+                FROM usuarios
+                WHERE 1=1 {condicion_filtro}
+                ORDER BY fecha_registro DESC
+            """
+            cursor.execute(consulta, parametros)
+            datos = cursor.fetchall()
+
+        elif tipo == "recargas":
+            consulta = f"""
+                SELECT r.id, u.nombre, r.monto, r.metodo_pago, r.fecha
+                FROM recargas r
+                JOIN usuarios u ON r.user_id = u.id
+                WHERE 1=1 {condicion_filtro}
+                ORDER BY r.fecha DESC
+            """
+            cursor.execute(consulta, parametros)
+            datos = cursor.fetchall()
+
+        elif tipo == "rutas":
+            consulta = f"""
+                SELECT id_ruta, nombre_ruta, descripcion, fecha_creacion
+                FROM rutas
+                WHERE 1=1 {condicion_filtro}
+                ORDER BY fecha_creacion DESC
+            """
+            cursor.execute(consulta, parametros)
+            datos = cursor.fetchall()
+
+        elif tipo == "cooperativas":
+            consulta = f"""
+                SELECT id_cooperativa, nombre, direccion, telefono
+                FROM cooperativas
+                WHERE 1=1 {condicion_filtro}
+                ORDER BY nombre DESC
+            """
+            cursor.execute(consulta, parametros)
+            datos = cursor.fetchall()
+
+        elif tipo == "conductores":
+            consulta = f"""
+                SELECT id_conductor, nombre, apellido, licencia, fecha_ingreso
+                FROM conductores
+                WHERE 1=1 {condicion_filtro}
+                ORDER BY fecha_ingreso DESC
+            """
+            cursor.execute(consulta, parametros)
+            datos = cursor.fetchall()
+
+        cursor.close()
+
+    return render_template("informe.html", datos=datos, tipo=tipo, campo=campo, valor_filtro=valor_filtro, campos_posibles=campos_posibles)
+
+
 if __name__ == '__main__':
     app.run(debug=True)
