@@ -24,14 +24,17 @@
         <option value="conductores" {% if tipo == 'conductores' %}selected{% endif %}>Conductores</option>
       </select>
     </div>
+
     <div class="col-md-3">
       <label for="fecha_inicio" class="form-label">Desde</label>
       <input type="date" id="fecha_inicio" name="fecha_inicio" class="form-control" required value="{{ fecha_inicio or '' }}">
     </div>
+
     <div class="col-md-3">
       <label for="fecha_fin" class="form-label">Hasta</label>
       <input type="date" id="fecha_fin" name="fecha_fin" class="form-control" required value="{{ fecha_fin or '' }}">
     </div>
+
     <div class="col-md-2 d-grid">
       <button type="submit" class="btn btn-success mt-4">Generar Informe</button>
     </div>
@@ -40,7 +43,6 @@
   {% if datos %}
   <hr>
   <h4>Resultados del Informe: {{ tipo|capitalize }}</h4>
-  <p><strong>Descripción:</strong> Este informe presenta datos sobre el tipo de información seleccionada: <em>{{ tipo }}</em>, mostrando los registros de manera ordenada ascendente.</p>
 
   <button class="btn btn-danger mb-3" onclick="generarPDF()">Descargar PDF</button>
 

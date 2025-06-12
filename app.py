@@ -611,85 +611,71 @@ def index():
 def informe():
     datos = None
     tipo = None
-    campo = None
-    valor_filtro = None
     fecha_inicio = None
     fecha_fin = None
 
-    campos_posibles = {
-        "usuarios": ["nombre", "email", "telefono", "fecha_nacimiento"],
-        "recargas": ["monto", "metodo_pago", "fecha"],
-        "rutas": ["descripcion", "tarifa", "horario"],
-        "cooperativas": ["nombre", "color", "ciudad"],
-        "conductores": ["nombre", "fecha_nacimiento", "telefono", "estado_civil", "genero"],
-    }
-
     if request.method == "POST":
         tipo = request.form["tipo_informe"]
-        campo = request.form.get("campo")
-        valor_filtro = request.form.get("valor_filtro")
-        fecha_inicio = request.form.get("fecha_inicio")
-        fecha_fin = request.form.get("fecha_fin")
+        fecha_inicio = request.form["fecha_inicio"]
+        fecha_fin = request.form["fecha_fin"]
 
         cursor = mysql.connection.cursor()
-        condicion_filtro = ""
+        condicion_fecha = ""
         parametros = []
 
-        if campo and valor_filtro:
-            if tipo in campos_posibles and campo in campos_posibles[tipo]:
-                condicion_filtro += f" AND {campo} LIKE %s"
-                parametros.append(f"%{valor_filtro}%")
+        # Para usuarios y conductores, no aplicar filtro de fecha (o solo si tienes un campo registro)
+        if tipo in ["recargas"]:
+            # Para recargas solo aplicar filtro si ambas fechas existen
+            if fecha_inicio and fecha_fin:
+                condicion_fecha = " WHERE fecha BETWEEN %s AND %s "
+                parametros = [fecha_inicio, fecha_fin]
 
-        if fecha_inicio and fecha_fin:
-            if tipo == "recargas":
-                condicion_filtro += " AND r.fecha BETWEEN %s AND %s"
-                parametros.extend([fecha_inicio, fecha_fin])
-            elif tipo == "usuarios":
-                condicion_filtro += " AND fecha_nacimiento BETWEEN %s AND %s"
-                parametros.extend([fecha_inicio, fecha_fin])
-            elif tipo == "conductores":
-                condicion_filtro += " AND fecha_nacimiento BETWEEN %s AND %s"
-                parametros.extend([fecha_inicio, fecha_fin])
-
+        # Consultas según tipo
         if tipo == "usuarios":
-            consulta = f"""
+            consulta = """
                 SELECT id, nombre, email, telefono, fecha_nacimiento
                 FROM users
-                WHERE 1=1 {condicion_filtro}
                 ORDER BY id ASC
             """
+            parametros = []  # Sin filtro de fecha
+
+        elif tipo == "conductores":
+            consulta = """
+                SELECT id, nombre, fecha_nacimiento, telefono, estado_civil, genero
+                FROM drivers
+                ORDER BY id ASC
+            """
+            parametros = []  # Sin filtro de fecha
+
         elif tipo == "recargas":
             consulta = f"""
                 SELECT r.id, u.nombre, r.monto, r.metodo_pago, r.fecha
                 FROM recharges r
                 JOIN users u ON r.user_id = u.id
-                WHERE 1=1 {condicion_filtro}
+                {condicion_fecha}
                 ORDER BY r.id ASC
-            """ 
+            """
+
         elif tipo == "rutas":
-            consulta = f"""
+            consulta = """
                 SELECT id, descripcion, tarifa, horario
                 FROM routes
-                WHERE 1=1 {condicion_filtro}
                 ORDER BY id ASC
             """
+            parametros = []
+
         elif tipo == "cooperativas":
-            consulta = f"""
+            consulta = """
                 SELECT id, nombre, color, ciudad
                 FROM cooperatives
-                WHERE 1=1 {condicion_filtro}
                 ORDER BY nombre ASC
             """
-        elif tipo == "conductores":
-            consulta = f"""
-                SELECT id, nombre, fecha_nacimiento, telefono, estado_civil, genero
-                FROM drivers
-                WHERE 1=1 {condicion_filtro}
-                ORDER BY id ASC
-            """
+            parametros = []
+
         else:
             consulta = ""
-        
+            parametros = []
+
         if consulta:
             cursor.execute(consulta, parametros)
             datos = cursor.fetchall()
@@ -699,12 +685,10 @@ def informe():
         "informes.html",
         datos=datos,
         tipo=tipo,
-        campo=campo,
-        valor_filtro=valor_filtro,
         fecha_inicio=fecha_inicio,
         fecha_fin=fecha_fin,
-        campos_posibles=campos_posibles
     )
+
 
 
 
