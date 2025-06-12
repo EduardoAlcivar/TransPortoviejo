@@ -1,30 +1,39 @@
-<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <title>Registro Cliente</title>
+    <meta charset="UTF-8">
+    <title>TRANSPORTO - Registrarse</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='registro.css') }}">
 </head>
 <body>
-    <h2>Registro de Cliente</h2>
+
+<div class="container">
+    <div class="logo">
+        <img src="https://cdn-icons-png.flaticon.com/512/61/61205.png" alt="logo">
+        <div>
+            <h1>TRANSPORTO</h1>
+            <p>La forma inteligente de moverse</p>
+        </div>
+    </div>
+
+    <h2>Registrarse</h2>
+
     <form method="post" action="{{ url_for('registro') }}">
-        <label for="nombre">Nombre y Apellido:</label>
-        <input type="text" id="nombre" name="nombre" required /><br /><br />
+        <input type="text" name="nombre" placeholder="Nombre y Apellido" required>
+        <input type="email" name="email" placeholder="Correo Electrónico" required>
+        <input type="tel" name="telefono" placeholder="Número de celular" required>
+        <input type="date" name="fecha_nacimiento" required>
+        <input type="password" name="contraseña" placeholder="Contraseña" required>
 
-        <label for="fecha_nacimiento">Fecha de nacimiento:</label>
-        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required /><br /><br />
+        <div class="full-width">
+            <button type="submit">Registrarse</button>
+        </div>
 
-        <label for="telefono">Número de celular:</label>
-        <input type="text" id="telefono" name="telefono" required /><br /><br />
-
-        <label for="email">Correo electrónico:</label>
-        <input type="email" id="email" name="email" required /><br /><br />
-
-        <label for="contraseña">Contraseña:</label>
-        <input type="password" id="contraseña" name="contraseña" required /><br /><br />
-
-        <button type="submit">Registrar</button>
+        <div class="login-link">
+            ¿Ya tienes cuenta? <a href="{{ url_for('login') }}">Inicia sesión aquí</a>
+        </div>
     </form>
-    <p>¿Ya tienes cuenta? <a href="{{ url_for('login') }}">Inicia sesión aquí</a></p>
+</div>
+
 </body>
 </html>
